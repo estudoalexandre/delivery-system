@@ -1,0 +1,65 @@
+{% extends 'delivery_store/base_dashboard.html' %}
+
+{% block content %}
+<div class="container">
+    <form method="post" enctype="multipart/form-data" class="p-4 border rounded" style="max-width: 600px; margin: auto;">
+        {% csrf_token %}
+        
+        <h3 class="mb-4 text-center">Criar Loja</h3>
+        
+        <!-- {% comment %} Dicionário para mapear ícones aos campos {% endcomment %}
+        {% with icon_map={
+            'name': 'fa-store',
+            'description': 'fa-align-left',
+            'rua': 'fa-road',
+            'numero': 'fa-hashtag',
+            'bairro': 'fa-map-marker-alt',
+            'cidade': 'fa-city',
+            'estado': 'fa-flag',
+            'cep': 'fa-envelope',
+            'phone': 'fa-phone',
+            'open_time': 'fa-clock',
+            'close_time': 'fa-clock',
+            'image': 'fa-image'
+        } %} -->
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="font-weight-bold">{{ field.label }}</label>
+                <div class="input-group">
+                    {% if field.name in icon_map %}
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas {{ icon_map.field.name }}"></i></span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}">{{ field.value|default:'' }}</textarea>
+                    {% elif field.field.widget.input_type == 'file' %}
+                        <input type="file" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}">
+                    {% elif field.field.widget.input_type == 'time' %}
+                        <input type="time" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
+                    {% else %}
+                        <input type="text" name="{{ field.name }}" class="form-control" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}">
+                    {% endif %}
+                </div>
+                
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <small class="text-danger">{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-primary btn-block">Criar Loja</button>
+        
+
+    </form>
+</div>
+
+<!-- Font Awesome CDN para os ícones -->
+
+{% endblock %}
+

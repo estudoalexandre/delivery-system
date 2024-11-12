@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Sidebar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body>
+    {% block nav %}
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="">
+                <img src="https://i.ibb.co/SsNpCdj/Cloud-Tech-logo-design-Cloud-Tech-with-arrow-up-and-circuit-logo-design.png"
+                    alt="Logo" height="60px" class="d-inline-block align-text-top">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar"
+                aria-controls="offcanvasSidebar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    {% endblock %}
+    <main class="d-flex" style="height: calc(100vh - 60px);">
+        {% block sidebar %}
+        <nav id="sidebar" class="flex-column p-3">
+            <div id="toggleArrow">&lsaquo;</div>
+            <h2>Menu</h2>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"><i class="fas fa-box"></i> Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'delivery_store:menu' %}"><i
+                            class="fas fa-utensils"></i> Cardapio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'login_lojista:profile' %}"><i
+                            class="fas fa-user"></i> Meu Perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"><i class="fas fa-motorcycle"></i> Entregadores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"><i class="fas fa-ticket-alt"></i> Cupons</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"><i class="fas fa-share-alt"></i> Midia Social</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white dropdown-toggle" href="#" data-bs-toggle="collapse"
+                        data-bs-target="#relatoriosMenu" aria-expanded="false">
+                        <i class="fas fa-chart-line"></i> Relatorios
+                    </a>
+                    <ul class="collapse list-unstyled" id="relatoriosMenu">
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-file-invoice-dollar"></i> Relatorio
+                                Financeiro</a></li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-calendar-day"></i> Pedidos
+                                Diarios</a></li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-calendar-alt"></i> Pedidos
+                                Mensais</a></li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-cash-register"></i> Fechamento de
+                                Caixa</a></li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-chart-bar"></i> Mais Vendidos</a>
+                        </li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-motorcycle"></i> Entregadores</a>
+                        </li>
+                        <li><a class="nav-link text-white" href="#"><i class="fas fa-users"></i> Relatorio Clientes</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"><i class="fas fa-file-invoice"></i> Faturas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white dropdown-toggle" href="#" data-bs-toggle="collapse"
+                        data-bs-target="#configuracoesMenu" aria-expanded="false">
+                        <i class="fas fa-cog"></i> Configurações
+                    </a>
+                    <ul class="collapse list-unstyled" id="configuracoesMenu">
+                        <li><a class="nav-link text-white" href="{% url 'delivery_store:create_or_update_store' %}">Cadastrar
+                                Loja</a></li>
+                        <li><a class="nav-link text-white" href="#">Opção 2</a></li>
+                    </ul>
+                </li>
+
+                <form id="logout-form" action="" method="post">
+                    {% csrf_token %}
+                    <li>
+                        <a href="#" class="nav-link text-white"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </a>
+                    </li>
+                </form>
+            </ul>
+        </nav>
+        {% endblock %}
+
+        <div id="content" class="flex-grow-1">
+            {% block content %}
+            <!-- Conteúdo principal aqui -->
+
+
+            {% endblock %}
+        </div>
+    </main>
+
+    <div class="modal fade" id="modal-category" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Adicionar Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'delivery_store:add_category' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="category_name" class="form-label">Nome da Categoria</label>
+                            <input type="text" class="form-control" id="category_name" name="name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-new-item" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Adicionar Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'delivery_store:menu' %}" id="add-item-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" id="id_categoria" name="categoria_id">
+                        <div class="card p-4">
+                            {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger">
+                                    {% for error in field.errors %}
+                                    <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-edit-item" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Editar Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="" id="edit-item-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Imagem</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Preço</label>
+                            <input type="number" class="form-control" id="price" name="price" required step="0.01">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </form>
+                    <form action="" method="post" id="delete-item-form">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal"
+                            data-bs-target="#confirmDeleteModal">Deletar Item</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteLabel">Confirmação de Deleção</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir este item?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Deletar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-edit-category" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Editar Categoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="edit-category-form" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="category_name" class="form-label">Novo Nome</label>
+                            <input type="text" class="form-control" id="category_name" name="name" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar Categoria</button>
+                    </form>
+                    <div class="d-flex justify-content-between mt-3">
+                        <form action="" method="post" id="delete-category-form">
+                            {% csrf_token %}
+                            <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModalCategory">
+                                Deletar Categoria
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteModalCategory" tabindex="-1" aria-labelledby="confirmDeleteLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-black">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteLabel">Confirmação de Deleção</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir esta Categoria?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteCategoryButton">Deletar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/dash_toggle.js' %}"></script>
+    {% block extra_script %}
+    {% endblock %}
+</body>
+
+</html>

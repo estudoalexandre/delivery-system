@@ -1,0 +1,167 @@
+{% extends 'delivery_store/base_dashboard.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-primary text-white">
+                    <h2 class="mb-0">{% translate 'Store Profile' %}</h2>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <img class="rounded-circle img-thumbnail" src="{{ store.image.url }}"
+                            alt="{{ user.first_name }} Picture" style="width: 150px; height: 150px;">
+                        <div class="online__status"></div>
+                    </div>
+                    <h4 class="card-title">{{ store.name }}</h4>
+                    <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+                    <p class="card-text"><strong>{% trans 'Phone:'%}</strong> {{ store.phone }}</p>
+                    <p class="card-text"><strong>{% trans 'Description:'%}</strong> {{ store.description }}</p>
+                    <p class="card-text"><strong>{% trans 'Open Time:'%}</strong> {{ store.open_time }} - <strong>{% trans 'Close Time:'%}</strong> {{ store.close_time }} </p>
+                    <p class="card-text"><strong>{% trans 'Address:' %} </strong> {{ store.street }}, {{ store.number }}, {{ store.neighborhood }},
+                        {{ store.city }}, {{ store.state }}, {{ store.postal_code }}</p>
+                    <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal"
+                        data-bs-target="#editProfileModal">
+                        Editar Perfil
+                    </button>
+
+                </div>
+            <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#confirmDeleteUserLojista">
+                Deletar Usuario
+            </button>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirmDeleteUserLojista" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-black">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmação de Deleção</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir seu usuário? <br>
+                <span>Você perderá total acesso da sua Loja.</span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- Formulário para deletar o usuário -->
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Deletar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-black">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Adicione o ID aqui no formulário -->
+                <form id="editStoreForm" method="POST" action="{% url 'delivery_store:create_or_update_store' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="id_username" name="username"
+                            value="{{ user.username }}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="id_email" name="email"
+                            value="{{ user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_desricption" class="form-label">description</label>
+                        <input type="description" class="form-control" id="id_desricption" name="description"
+                            value="{{ store.description }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">Nome da Loja</label>
+                        <input type="name" class="form-control" id="id_name" name="name"
+                            value="{{ store.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_neighborhood" class="form-label">neighborhood</label>
+                        <input type="neighborhood" class="form-control" id="id_neighborhood" name="neighborhood"
+                            value="{{ store.neighborhood }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_city" class="form-label">city</label>
+                        <input type="city" class="form-control" id="id_city" name="city"
+                            value="{{ store.city }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_number" class="form-label">number</label>
+                        <input type="number" class="form-control" id="id_number" name="number"
+                            value="{{ store.number }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_phone" class="form-label">phone</label>
+                        <input type="phone" class="form-control" id="id_phone" name="phone"
+                            value="{{ store.phone }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_city" class="form-label">postal_code</label>
+                        <input type="postal_code" class="form-control" id="id_postal_code" name="postal_code"
+                            value="{{ store.postal_code }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_city" class="form-label">state</label>
+                        <input type="state" class="form-control" id="id_state" name="state"
+                            value="{{ store.state }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_street" class="form-label">street</label>
+                        <input type="street" class="form-control" id="id_street" name="street"
+                            value="{{ store.street }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_open_time" class="form-label">open_time</label>
+                        <input type="open_time" class="form-control" id="id_open_time" name="open_time"
+                            value="{{ store.open_time }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_close_time" class="form-label">close_time</label>
+                        <input type="close_time" class="form-control" id="id_close_time" name="close_time"
+                            value="{{ store.close_time }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_slug" class="form-label">slug</label>
+                        <input type="slug" class="form-control" id="id_slug" name="slug"
+                            value="{{ store.slug }}" required>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <label for="id_image" class="form-label">Imagem Atual</label><br>
+                        <img src="{{ store.image.url }}" alt="{{ user.first_name }} Picture"
+                            class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_new_image" class="form-label">Nova Imagem de Perfil</label>
+                        <input type="file" class="form-control" id="id_new_image" name="image"> <!-- Campo para upload da nova imagem -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% block extra_script %}
+ <script src="{% static 'js/profile_store.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

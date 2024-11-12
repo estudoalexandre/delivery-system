@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login do Lojista</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/login_lojista.css' %}">
+</head>
+
+<body>
+    {% block content %}
+    <div class="my-form">
+        <div class="login-welcome-row">
+            <img src="{% static 'images/storeify.png' %}" alt="Logo" class="logo">
+            <h1>Bem-vindo de volta &#x1F44F;</h1>
+            <p>Insira seus dados para acessar a conta do lojista!</p>
+        </div>
+        <form class="input__wrapper" method="post">
+            {% csrf_token %}
+            {{ form.username.label_tag }}  <!-- Isso exibe 'Email' agora -->
+            {{ form.username }}
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            <button type="submit" class="my-form__button">Login</button>
+
+            <p class="text-center mt-4" style="font-variant: small-caps; font-size: 0.9rem;">
+                <button type="button" class="btn btn-link p-0" data-toggle="modal" data-target="#resetPasswordModal">
+                    Esqueci minha senha
+                </button>
+            </p>
+        </form>
+        <div class="my-form__actions">
+            <div class="my-form__row">
+                <span>{% translate "Don't have an account?" %}</span>
+                <a href="{% url 'login_lojista:register' %}" type="button" class="btn btn-link p-0">
+                    {% translate "Sign up" %}
+                </button>
+            </div>
+        </div>
+
+        {% if form.errors %}
+        <div class="errors mt-3">
+            <p class="text-danger text-center">Usuário ou senha inválidos.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal para resetar senha -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">Redefinir Senha</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulário de redefinição de senha -->
+                    <form method="POST" action="{% url 'login_lojista:password_reset' %}">
+                        {% csrf_token %}
+                        <div class="form-group card p-4">
+                            <label for="reset_email">Insira o email cadastrado:</label>
+                            <input type="email" name="email" class="form-control" id="reset_email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Redefinir Senha</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'js/user_scripts.js' %}"></script>
+</body>
+
+</html>

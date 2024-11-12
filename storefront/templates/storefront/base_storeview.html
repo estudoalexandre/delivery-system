@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ store.name }}{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body>
+    {% block nav %}
+    <div id="header-div-top" class="background-header-container">
+        <!-- Imagem de fundo -->
+        <div class="header-cover-photo"></div>
+
+        <!-- Overlay -->
+        <div class="header-overlay"></div>
+
+        <!-- Conteúdo Principal -->
+        <div class="header-content container-fluid">
+
+            <!-- Linha superior: botão de toggle e informações do usuário -->
+            <!-- Linha superior: botão de toggle e informações do usuário -->
+            <div class="container d-flex justify-content-end align-items-center py-3">
+                <!-- Toggle Button - Visível apenas em telas pequenas -->
+                <button class="navbar-toggler ms-auto d-lg-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon text-white"></span>
+                </button>
+
+                <!-- Informações do Usuário - Visíveis apenas em telas grandes -->
+                <div class="right-icons d-none d-lg-flex align-items-center">
+                    <a href="#" class="text-white me-3"><i class="bi bi-tag"></i></a>
+                    {% if user.is_authenticated %}
+                    <div class="dropdown me-3">
+                        <a class="text-white dropdown-toggle" href="#" role="button" id="userDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="">Editar Perfil</a></li>
+                            <li>
+                                <form id="logout-form"
+                                    action="{% url 'login_client:logout_client' %}?next={{ request.path }}"
+                                    method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="#" class="text-white me-3" data-bs-toggle="modal" data-bs-target="#RegisterModal"><i
+                            class="bi bi-person"></i> Entre ou Cadastre-se</a>
+                    {% endif %}
+                    <a href="#" class="text-white me-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart">
+                        <i class="bi bi-cart"></i> {{ cart_item_count }}
+                    </a>
+                </div>
+            </div>
+
+
+            <!-- Offcanvas para Informações do Usuário - Só é ativado em telas menores -->
+            <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Usuário</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <a href="#" class="text-white me-3"><i class="bi bi-tag"></i></a>
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <a class="text-white dropdown-toggle" href="#" role="button" id="userDropdown"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="">Editar Perfil</a></li>
+                            <li>
+                                <form id="logout-form-small" action="" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="#" class="text-white me-3"><i class="bi bi-person"></i> Entre ou Cadastre-se</a>
+                    {% endif %}
+                    <a href="#" class="text-white me-3 d-none d-md-none" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasCart">
+                        <i class="bi bi-cart"></i> {{ cart_item_count }}
+                    </a>
+                </div>
+            </div>
+            <div
+                class="fixed-bottom bg-success text-white d-lg-none p-3 d-flex justify-content-between align-items-center">
+                <div style="font-size: 0.8rem;">
+                    <a href="#" class="nav-link" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart">
+                        <i class="bi bi-cart"></i> {{ cart_item_count }} ITEM NO SEU CARRINHO</a>
+                </div>
+                <div>
+                    <span>R$ {{ cart.get_total_price }}</span>
+                    <button class="btn btn-light btn-sm ms-2">Ver Carrinho</button>
+                </div>
+            </div>
+
+            <!-- Linha inferior: informações da loja -->
+            <div class="container d-flex justify-content-start align-items-center py-5">
+                <div class="d-flex align-items-center">
+                    <img src="{{ store.image.url }}" class="img-header-fixed" alt="Logo da Loja">
+                    <div class="store-info ms-3 text-white">
+                        <h5>{{ store.name }}</h5>
+                        <p class="d-none d-md-block">{{ store.street }}, {{ store.number }}, {{ store.neighborhood }},
+                            {{ store.city }}, {{ store.state }}, {{ store.postal_code }}</p>
+                        <p class="status">Aberto até: {{ store.close_time }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="address-section py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Dropdown para seleção de Entrega/Retirada e Informações -->
+            <div class="d-flex align-items-center">
+                <div class="btn-group me-3">
+                    <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <i class="bi bi-person"></i> <span id="deliveryOption">Entrega</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="showInfo('entrega')"><i class="bi bi-truck"></i>
+                                Entrega</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showInfo('retirada')"><i
+                                    class="bi bi-person"></i> Retirada</a></li>
+                    </ul>
+                </div>
+
+                <!-- Informações de Entrega -->
+                <div id="entregaInfo" class="me-3">
+                    <p class="mb-0"><i class="bi bi-truck"></i> Entregar em, até 40 min • A partir de R$ 8,00</p>
+                </div>
+
+                <!-- Informações de Retirada -->
+                <div id="retiradaInfo" class="d-none me-3">
+                    <p class="mb-0"><i class="bi bi-person"></i> Retirar em, 20 min</p>
+                    <p class="mb-0">{{ store.street }}, {{ store.number }}, {{ store.neighborhood }}, {{ store.city }},
+                        {{ store.state }}, {{ store.postal_code }}</p>
+                </div>
+            </div>
+
+            <!-- Selecionar Endereço -->
+            <div>
+                <a href="#" class="text-success" data-bs-toggle="modal" data-bs-target="#cepModal">Selecionar endereço
+                    <i class="bi bi-chevron-down"></i></a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="cepModal" tabindex="-1" aria-labelledby="cepModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cepModalLabel">Pesquisar CEP</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="cepInput" class="form-label">Digite o CEP</label>
+                        <input type="text" class="form-control" id="cepInput" placeholder="Digite o CEP">
+                    </div>
+                    <button class="btn btn-primary" onclick="buscarCep()">Buscar</button>
+                    <div class="mt-3">
+                        <label>Endereço</label>
+                        <input type="text" class="form-control" id="endereco" readonly>
+                    </div>
+                    <div class="mt-3">
+                        <label>Bairro</label>
+                        <input type="text" class="form-control" id="bairro" readonly>
+                    </div>
+                    <div class="mt-3">
+                        <label>Cidade</label>
+                        <input type="text" class="form-control" id="cidade" readonly>
+                    </div>
+                    <div class="mt-3">
+                        <label>Estado</label>
+                        <input type="text" class="form-control" id="estado" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasCart"
+        aria-labelledby="offcanvasCartLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasCartLabel">Carrinho de Compras</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <h6 class="mb-3">Itens no Carrinho:</h6>
+
+            {% if user.is_authenticated %}
+            <ul class="list-group">
+                {% for cart_product in cart_products %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ cart_product.product.image.url }}" alt="{{ cart_product.product.name }}"
+                            style="width: 50px; height: auto; margin-right: 10px;">
+                        <div>
+                            <strong>{{ cart_product.product.name }}</strong><br>
+                            Quantidade: {{ cart_product.quantity }}<br>
+                            Preço: R$ {{ cart_product.product.price }}<br>
+                            <span class="text-muted">Subtotal: R$ </span>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <button href="" data-bs-toggle="modal" data-bs-target="#productModal{{ cart_product.id }}"
+                            class="btn btn-primary">
+                            <i class="bi bi-pencil"></i>Editar</button>
+                        <form action="{% url 'storefront:remove_cart' product_id=cart_product.product.id %}"
+                            method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                        </form>
+                    </div>
+                </li>
+
+                <!-- Modal para editar quantidade -->
+                <div class="modal fade" id="productModal{{ cart_product.id }}" tabindex="2"
+                    aria-labelledby="productModalLabel{{ cart_product.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productModalLabel{{ cart_product.id }}">
+                                    Editar {{ cart_product.product.name }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form method="post"
+                                action="{% url 'storefront:update_cart' product_id=cart_product.product.id %}">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <label for="quantity{{ cart_product.id }}">Quantidade:</label>
+                                    <input type="number" name="quantity" id="quantity{{ cart_product.id }}"
+                                        class="form-control" value="{{ cart_product.quantity }}" min="1">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <li class="list-group-item">Nenhum item no carrinho.</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Total do carrinho -->
+            <div class="mt-3">
+                <h6><strong>Total do Carrinho:</strong> R$ {{ cart.get_total_price|floatformat:2 }}</h6>
+            </div>
+
+            <!-- Botão Ver Carrinho -->
+            <div class="mt-3">
+                <a href="" class="btn btn-success w-100">Ver Carrinho</a>
+            </div>
+            {% else %}
+            <ul class="list-group">
+                {% for product_id, item in request.session.cart.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ item.image_url|default:'/static/default-image.jpg' }}" alt="{{ item.name }}"
+                            style="width: 50px; height: auto; margin-right: 10px;">
+                        <div>
+                            <strong>{{ item.name }}</strong><br>
+                            Quantidade: {{ item.quantity }}<br>
+                            Preço: R$ {{ item.price|floatformat:2 }}<br>
+                            <span class="text-muted">Subtotal: R$ {{ item.quantity|floatformat:2 }}</span>
+
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column">
+                        <button href="" data-bs-toggle="modal" data-bs-target="#productModal{{ product_id }}"
+                            class="btn btn-primary">
+                            <i class="bi bi-pencil"></i>Editar</button>
+                        <form action="{% url 'storefront:remove_cart' product_id=product_id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Excluir
+                            </button>
+                        </form>
+                    </div>
+                </li>
+
+                <div class="modal fade" id="productModal{{ product_id }}" tabindex="-1"
+                    aria-labelledby="productModalLabel{{ product_id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="productModalLabel{{ product_id }}">
+                                    Editar {{ item.name }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <form method="post" action="{% url 'storefront:update_cart' product_id=product_id %}">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <label for="quantity{{ product_id }}">Quantidade:</label>
+                                    <input type="number" name="quantity" id="quantity{{ product_id }}"
+                                        class="form-control" value="{{ item.quantity }}" min="1">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <li class="list-group-item">Nenhum item no carrinho.</li>
+                {% endfor %}
+            </ul>
+            <div class="mt-3">
+                <a href="" class="btn btn-success w-100">Ver Carrinho</a>
+            </div>
+
+            {% endif %}
+
+            <!-- Mensagens de sucesso -->
+            {% if messages %}
+            <div class="alert alert-success mt-3" role="alert">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal fade" id="RegisterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Entre ou cadastre-se</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center" id="step1">
+                    <p>Para acompanhar seus últimos pedidos, ver informações salvas e ainda ter benefícios exclusivos.
+                    </p>
+
+                    <button
+                        class="btn btn-outline-secondary w-100 mb-2 d-flex align-items-center justify-content-center">
+                        <img src="https://img.icons8.com/color/20/google-logo.png" alt="Google logo">
+                        <span class="ms-2">CONTINUAR COM GOOGLE</span>
+                    </button>
+
+                    <!-- <button class="btn btn-primary w-100 mb-2 d-flex align-items-center justify-content-center">
+                        <img src="https://img.icons8.com/color/20/facebook-new.png" alt="Facebook logo">
+                        <span class="ms-2">CONTINUAR COM FACEBOOK</span>
+                    </button>
+                    
+                    <button class="btn btn-dark w-100 mb-2 d-flex align-items-center justify-content-center">
+                        <img src="https://img.icons8.com/ios-filled/20/ffffff/phone.png" alt="Phone icon">
+                        <span class="ms-2">CONTINUAR COM CELULAR</span>
+                    </button> -->
+                    <button class="btn btn-light w-100 mb-2 d-flex align-items-center justify-content-center"
+                        onclick="showEmailForm()">
+                        <img src="https://img.icons8.com/ios-filled/20/4a90e2/email.png" alt="Email icon">
+                        <span class="ms-2">CONTINUAR COM E-MAIL</span>
+                    </button>
+
+                    <a href="#" class="d-block mt-2">Continuar sem uma conta →</a>
+                </div>
+
+                <div class="modal-body d-none" id="step2">
+                    <h5>Continuar com e-mail</h5>
+                    <p>Insira seu endereço de e-mail abaixo:</p>
+                    <label for="emailInput" class="form-label">E-MAIL</label>
+                    <input type="email" id="emailInput" class="form-control mb-3" placeholder="seuemail@exemplo.com">
+
+                    <div class="modal-footer d-flex justify-content-between">
+                        <!-- Botão de seta para voltar -->
+                        <button type="button" class="btn p-0" onclick="showLoginForm()"
+                            style="background: none; border: none;">
+                            <img src="https://img.icons8.com/ios-glyphs/24/000000/left.png" alt="Voltar">
+                        </button>
+                        <div class="text-danger d-none" id="emailError">Por favor, insira um e-mail válido.</div>
+                        <!-- Botão Continuar ocupando o restante do espaço -->
+                        <button class="btn btn-dark w-100 ms-2" onclick="submitEmail()"
+                            data-url="{% url 'login_client:check_email_exists' %}">CONTINUAR</button>
+                    </div>
+                </div>
+
+                <div class="modal-body d-none" id="loginFormExists">
+                    <h5>Entrar</h5>
+                    <p>Email já registrado. Digite sua senha para fazer login.<a href="#"
+                            onclick="showEmailForm()">Alterar</a></p>
+                    <form method="post" onsubmit="event.preventDefault(); submitLogin(); ">
+                        {% csrf_token %}
+                        <label for="loginEmail" class="form-label">E-MAIL</label>
+                        <input type="email" id="loginEmail" class="form-control mb-3" readonly>
+
+                        <label for="loginPassword" class="form-label">SENHA</label>
+                        <input type="password" id="loginPassword" class="form-control mb-3"
+                            placeholder="Digite sua senha">
+
+                        <div class="modal-footer d-flex justify-content-between">
+                            <!-- <button type="button" class="btn p-0" onclick="showEmailForm()" style="background: none; border: none;">
+                            <img src="https://img.icons8.com/ios-glyphs/24/000000/left.png" alt="Voltar">
+                        </button> -->
+                            <button type="submit" class="btn btn-dark w-100 ms-2">ENTRAR</button>
+                        </div>
+                        <div class="text-danger d-none" id="loginError">Email ou senha incorretos.</div>
+                    </form>
+                </div>
+
+
+                <div class="modal-body d-none" id="step3">
+                    <form method="post" onsubmit="event.preventDefault(); registerClient();">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <h5>Crie uma conta</h5>
+                        <p>Com o e-mail <span id="userEmail"></span>. <a href="#" onclick="showEmailForm()">Alterar</a>
+                        </p>
+
+                        <h6 class="mt-4">Informações da conta</h6>
+
+                        <div class="mb-3">
+                            <label for="nameInput" class="form-label">NOME E SOBRENOME</label>
+                            <input type="text" id="nameInput" class="form-control" placeholder="">
+                            <div class="text-danger d-none" id="nameError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phoneInput" class="form-label">CELULAR</label>
+                            <input type="tel" id="phoneInput" class="form-control" placeholder="">
+                            <div class="text-danger d-none" id="phoneError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cpfInput" class="form-label">CPF/CNPJ (OPCIONAL)</label>
+                            <input type="text" id="cpfInput" class="form-control" placeholder="">
+                            <div class="text-danger d-none" id="cpfError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birthdayInput" class="form-label">ANIVERSÁRIO (OPCIONAL)</label>
+                            <input type="date" id="birthdayInput" class="form-control" placeholder="">
+                            <small class="form-text text-muted">Para envio de possíveis ofertas e promoções
+                                especiais</small>
+                            <div class="text-danger d-none" id="birthdayError"></div>
+                        </div>
+
+                        <h6 class="mt-4">Crie uma senha para acessar sua conta</h6>
+
+                        <div class="mb-3">
+                            <label for="passwordInput" class="form-label">CRIE UMA SENHA</label>
+                            <input type="password" id="passwordInput" class="form-control"
+                                placeholder="A senha deve conter no mínimo 6 caracteres">
+                            <div class="text-danger d-none" id="passwordError"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPasswordInput" class="form-label">CONFIRMAR SENHA</label>
+                            <input type="password" id="confirmPasswordInput" class="form-control"
+                                placeholder="A senha deve ser compatível com a anterior">
+                            <div class="text-danger d-none" id="confirm_passwordError"></div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="termsCheckbox">
+                            <label class="form-check-label" for="termsCheckbox">Li e estou de acordo com os <a
+                                    href="#">Termos e Políticas</a>.</label>
+                            <div class="text-danger d-none" id="termsCheckboxError"></div>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="promoCheckbox" checked>
+                            <label class="form-check-label" for="promoCheckbox">Quero me inscrever para receber
+                                comunicados sobre descontos e promoções da loja.</label>
+                            <div class="text-danger d-none" id="promoCheckboxError"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">CRIAR
+                            CONTA</button>
+                    </form>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="{% static '/js/script_website.js' %}"></script>
+
+    {% block extra_script %}
+    {% endblock %}
+</body>
+
+</html>

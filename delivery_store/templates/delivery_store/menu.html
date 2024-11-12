@@ -1,0 +1,84 @@
+{% extends 'delivery_store/base_dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/catalog.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-between align-items-center mb-3">
+        <div class="col-md-6 d-flex gap-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-category">+ Adicionar
+                Categoria</button>
+            <button class="btn btn-primary">Reordenar Cardápio</button>
+        </div>
+        <div class="col-md-6 d-flex justify-content-end gap-2">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Pesquisar...">
+                <button class="btn btn-primary dropdown-toggle">Pedidos</button>
+            </div>
+            <button class="btn btn-none">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Cardápio -->
+    {% for category_data in categories_with_products %}
+    <div class="menu-items">
+        <div class="card">
+            <div class="category-title">
+                <h5>{{ category_data.categoria.name }}</h5>
+                <div class="table-actions">
+                    <a href="#" class="text-primary">Pausar</a>
+                    <a href="#" class="text-primary">Duplicar</a>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#modal-edit-category"
+                        data-category-id="{{ category_data.categoria.id }}">
+                        Editar
+                    </button>
+                </div>
+            </div>
+            <table class="table table-hover">
+                <tbody>
+                    {% for product in category_data.products %}
+                    <tr>
+                        <td><img src="{{ product.image.url }}" alt="Imagem" class="img-fluid fixed-image"></td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price }}</td>
+                        <td class="text-right">
+                            <a href="#" class="text-primary">Pausar</a>
+                            <a href="#" class="text-primary">Duplicar</a>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#modal-edit-item"
+                                data-product-id="{{ product.id }}" data-categoria-id="{{ category_data.categoria.id }}">
+                                Editar
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Nenhum produto encontrado nesta categoria.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-new-item"
+                data-categoria-id="{{ category_data.categoria.id }}"
+                    data-url-template="{% url 'delivery_store:menu' %}">+ Adicionar Item</button>
+                <button class="btn btn-success">+ Adicionar itens em massa</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+
+    {% block extra_script %}
+    <script src="{% static 'js/catalog.js' %}"></script>
+    {% endblock %}
+</div>
+{% endblock %}
