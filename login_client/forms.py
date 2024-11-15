@@ -7,7 +7,7 @@ class ClientRegistrationForm(forms.ModelForm):
     name = forms.CharField(label='Nome e Sobrenome', max_length=100)
     email = forms.EmailField(label='Email')
     phone = forms.CharField(label='Celular', required=False)
-    cpf_cnpj = forms.CharField(label='CPF/CNPJ', required=False)
+    cpf = forms.CharField(label='CPF', required=False)
     birthday = forms.DateField(label='Aniversário', required=False)
     password = forms.CharField(label='Senha', widget=forms.PasswordInput, validators=[validate_password])
     confirm_password = forms.CharField(label='Confirmar Senha', widget=forms.PasswordInput)
@@ -15,6 +15,12 @@ class ClientRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email', 'password']
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if len(name.split()) < 2:
+            raise ValidationError('Por favor, informe seu nome completo.')
+        return name
         
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -44,4 +50,29 @@ class ClientRegistrationForm(forms.ModelForm):
             client_group, created = Group.objects.get_or_create(name='Cliente')
             user.groups.add(client_group)
         return user
-        
+
+
+class ClientUpdateForm(forms.ModelForm):
+    name = forms.CharField(label='Nome e Sobrenome', max_length=100)
+    email = forms.EmailField(label='Email')
+    phone = forms.CharField(label='Celular', required=False)
+    cpf = forms.CharField(label='CPF', required=False)
+    birthday = forms.DateField(label='Aniversário', required=False)
+    
+    class Meta:
+        model = User
+        fields = ['email']
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if len(name.split()) < 2:
+            raise ValidationError('Por favor, informe seu nome completo.')
+        return name
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.username = self.cleaned_data['email']
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user
