@@ -14,6 +14,7 @@ def store_view(request, slug):
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user, completed=False)
         cart_products = CartProduct.objects.filter(cart=cart)
+        total_price = sum(cart_product.product.price * cart_product.quantity for cart_product in cart_products)
     else:
         cart = request.session.get('cart', {})
         cart_products = [
@@ -28,6 +29,7 @@ def store_view(request, slug):
             }
             for product_id, item in cart.items()
         ]
+        total_price = sum([item['price'] * item['quantity'] for item in cart.values()])
     
     categories_with_products = [
         {'categoria': cat, 'products': cat.products.all()}
@@ -39,7 +41,9 @@ def store_view(request, slug):
         'cart': cart,
         'cart_products': cart_products,
         'categories_with_products': categories_with_products,
+        'total_price': total_price  # Agora `total_price` é sempre definido
     }
+    
     return render(request, 'storefront/store_detail.html', context)
 
 
@@ -152,6 +156,30 @@ def cart_item_count(request):
             total_quantity = sum([item['quantity'] for item in cart.values()])
             return {'cart_item_count': total_quantity}
     return {'cart_item_count': 0}
+
+def get_cart_items(request, slug):
+    store =  get_object_or_404(Store, slug=slug)
+    
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user, completed=False)
+        cart_products = cart.cartproduct_set.all()
+    else:
+        cart = request.session.get('cart', {})
+        cart_products = [
+            {
+                'product': {
+                    'id': product_id,
+                    'name': item['name'],
+                    'price': item['price'],
+                    'image_url': item['image_url'],
+                },
+                'quantity': item['quantity']
+            }
+            for product_id, item in cart.items()
+        ]
+    return render(request, 'storefront/cart_items.html', {
+        'cart_products': cart_products, 
+        'store': store})
         
 
 

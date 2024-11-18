@@ -1,0 +1,46 @@
+{% extends 'storefront/base_storeview.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart_items.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="cart p-3 shadow-sm rounded">
+        <h2 class="cart-title text-center mb-4">Meu Carrinho</h2>
+        <div class="cart-items">
+            {% for cart_items in cart_products %}
+            <div class="cart-item d-flex align-items-center border-bottom pb-2 mb-3">
+                <div class="cart-item__image me-3">
+                    {% if cart_items.product.image %}
+                    <img src="{{ cart_items.product.image.url }}" alt="{{ cart_items.product.name }}" class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                    <img src="{{ cart_items.product.image_url }}" alt="{{ cart_items.product.name }}" class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="cart-item__details flex-grow-1">
+                    <h5 class="cart-item__name mb-1">{{ cart_items.product.name }}</h5>
+                    <p class="cart-item__price text-muted mb-1"><small>Preço:</small> R$ {{ cart_items.product.price }}</p>
+                    <p class="cart-item__quantity text-muted mb-0"><small>Quantidade:</small> {{ cart_items.quantity }}</p>
+                </div>
+                <div class="cart-item__actions text-end">
+                    <div class="btn-group btn-group-sm mb-2" role="group">
+                        <button class="btn btn-outline-secondary">-</button>
+                        <input type="number" class="form-control form-control-sm text-center mx-1" value="{{ cart_items.quantity }}" min="1" style="width: 50px;">
+                        <button class="btn btn-outline-secondary">+</button>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger">Remover</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-summary text-end mt-3">
+            <h5 class="text-muted">Total: R$ </h5>
+            <button class="btn btn-success btn-sm">Finalizar Compra</button>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'storefront/base_storeview.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/confirm_delivery.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-4 step-container">
+            <h5 class="mb-4">Seus dados</h5>
+            <div class="step-box">
+                <div class="step-item active">
+                    <span class="step-number">1</span>
+                    <span>Identifique-se</span>
+                    <small>Alexandre</small>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <span>Modo de entrega do pedido</span>
+                    <small>Entrega</small>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <span>Forma de pagamento</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">4</span>
+                    <span>Confirmação do pedido</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <h5 class="mb-4">Modo de entrega</h5>
+            <div class="delivery-option mb-3">
+                <h5>Entrega</h5>
+                <p class="mb-2">Nós levamos o pedido até você</p>
+                <p><i class="bi bi-truck"></i> Entregar em, até 40 min • até R$ 15,00</p>
+                <p><i class="bi bi-geo-alt"></i> Endereço de entrega <a href="#" class="text-success">Selecionar</a></p>
+            </div>
+            <div class="delivery-option">
+                <h5>Retirada</h5>
+                <p>Peça de casa e retire seu pedido em nossa loja</p>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <button class="btn btn-back">VOLTAR PARA A LOJA</button>
+                <button class="btn btn-next">AVANÇAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
