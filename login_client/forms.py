@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from .models import User, UserClientAdresses
 
 class ClientRegistrationForm(forms.ModelForm):
     name = forms.CharField(label='Nome e Sobrenome', max_length=100)
@@ -76,3 +77,8 @@ class ClientUpdateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class UserClientAdressesForm(forms.ModelForm):
+    class Meta:
+        model = UserClientAdresses
+        fields = ['zip_code', 'street', 'neighbor', 'number', 'city', 'state', 'complemento', 'reference_point']

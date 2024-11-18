@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import UserClientProfile
+from .models import UserClientProfile, UserClientAdresses
 from django.http import JsonResponse
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.views import LoginView
-from .forms import ClientRegistrationForm, ClientUpdateForm
+from .forms import ClientRegistrationForm, ClientUpdateForm, UserClientAdressesForm
 from django.urls import reverse_lazy
 from storefront.utils import transfer_session_cart_to_user
 
@@ -109,6 +109,23 @@ def update_client(request, client_id):
         'form': form, 'client': client
     })
     
+def save_address(request, slug):
+    
+    if request.method == 'POST':
+        print(request.POST)
+        form = UserClientAdressesForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            return redirect('storefront:index', slug=slug)
+        else:
+            print(form.errors)
+    else:
+        form = UserClientAdressesForm()
+    return render(request, 'storefront/index.html', {
+        'form': form,
+        'slug': slug})
 
 
 

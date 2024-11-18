@@ -12,3 +12,17 @@ class UserClientProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+
+class UserClientAdresses(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    zip_code = models.CharField(max_length=20)
+    street = models.CharField(max_length=255)
+    neighbor = models.CharField(max_length=100)
+    number = models.CharField(max_length=10)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    complemento = models.CharField(max_length=255, blank=True, null=True)
+    reference_point = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.street

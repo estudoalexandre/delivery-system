@@ -41,7 +41,8 @@ def store_view(request, slug):
         'cart': cart,
         'cart_products': cart_products,
         'categories_with_products': categories_with_products,
-        'total_price': total_price  # Agora `total_price` é sempre definido
+        'total_price': total_price, 
+        'slug': slug
     }
     
     return render(request, 'storefront/store_detail.html', context)
